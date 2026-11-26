@@ -1,0 +1,72 @@
+class TimeMap {
+
+    //Intuition - since set is in stricly increasing order- binary search can be used to find target or the nearest big value
+
+    HashMap<String, List<Pair<Integer,String>>> map;
+
+    public TimeMap() {
+        this.map = new HashMap<>(); 
+    }
+    
+    public void set(String key, String value, int timestamp) {
+        List<Pair<Integer, String>> values;
+
+        if(this.map.containsKey(key))
+        {
+            values = this.map.get(key); 
+        }
+        else
+        {
+            values = new ArrayList<>();
+        }
+        Pair<Integer, String> pair = new Pair<>(timestamp,value);
+        values.add(pair);
+        this.map.put(key, values);
+        
+    }
+    
+    public String get(String key, int timestamp) {
+
+        if(!this.map.containsKey(key))
+            return "";
+        
+        List<Pair<Integer, String>> values = this.map.get(key);
+
+        if(values.size() == 0)
+            return "";
+
+        return binarySearch(values, timestamp);
+
+        
+    }
+
+    private String binarySearch(List<Pair<Integer, String>> values, int timestamp)
+    {
+        int left = 0, right = values.size() - 1;
+
+        String res = "";
+
+        while(left <= right)
+        {
+            int mid = (left + right)/2;
+
+            int ts = values.get(mid).getKey();
+
+            if(ts == timestamp)
+                return values.get(mid).getValue();
+
+            if(ts < timestamp)
+            {
+                left = mid + 1;
+            }
+            else
+                right = mid - 1; 
+        }
+
+         // Now: right = largest number below target, left = smallest number above target
+
+        if(right < 0)
+            return "";
+        return timestamp < values.get(right).getKey() ? "" : values.get(right).getValue();
+    }
+}
